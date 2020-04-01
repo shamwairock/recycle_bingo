@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
-import 'home_view_state.dart';
+import 'package:recyclebingo/util/trace_logger.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class HomeView extends StatefulWidget {
-  HomeView({Key key, this.title}) : super(key: key);
+class HomeView extends StatelessWidget{
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  static const double _hPadding = 16.0;
 
   @override
-  HomeViewState createState() => HomeViewState();
+  Widget build(BuildContext context){
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('recycle bingo'),
+        ),
+        body:Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+                padding: const EdgeInsets.fromLTRB(_hPadding, 32.0, _hPadding, 0),
+                child:Text('Hello recycle rangers', style: Theme.of(context).textTheme.title)
+            ),
+            Container(
+                padding: const EdgeInsets.fromLTRB(_hPadding, 0, _hPadding, 0),
+                child:Text('One man\'s Trash is another man\'s Treasure', style: Theme.of(context).textTheme.body1)
+            ),
+          ],
+        ),
+    );
+  }
+
+
 }

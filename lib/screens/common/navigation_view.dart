@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:recyclebingo/screens/common/image_banner_view.dart';
+import 'package:recyclebingo/screens/about/about_view.dart';
+import 'package:recyclebingo/screens/home/home_view.dart';
+import 'package:recyclebingo/screens/map/map_view.dart';
 import 'package:recyclebingo/util/trace_logger.dart';
-import 'home_view.dart';
+
+class NavigationView extends StatefulWidget {
+  @override
+  _NavigationViewState createState() => _NavigationViewState();
+}
 
 
-class HomeViewState extends State<HomeView> {
+class _NavigationViewState extends State<NavigationView> {
 
-  int currentTabIndex = 0;
+  int _currentTabIndex = 0;
+
+  final List<Widget> _widgets = [
+    HomeView(),
+    MapView(),
+    AboutView(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
-      currentTabIndex = index;
-      Logger.Write('Current Index ' + currentTabIndex.toString());
+      _currentTabIndex = index;
+      Logger.write('Current Index ' + _currentTabIndex.toString());
     });
   }
 
@@ -24,21 +36,10 @@ class HomeViewState extends State<HomeView> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            ImageBannerView("assets/images/boss.jpg"),
-          ],
-        ),
+        child: _widgets[_currentTabIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -51,14 +52,15 @@ class HomeViewState extends State<HomeView> {
             title: Text('Map'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.contacts),
-            title: Text('Contact'),
+            icon: Icon(Icons.info),
+            title: Text('About'),
           ),
         ],
         type: BottomNavigationBarType.fixed,
-        currentIndex: currentTabIndex,
-        selectedItemColor: Colors.amber[800],
+        currentIndex: _currentTabIndex,
         onTap: _onItemTapped,
+        backgroundColor: Colors.orange,
+        selectedItemColor: Colors.black54,
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
