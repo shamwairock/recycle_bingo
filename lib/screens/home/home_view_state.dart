@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recyclebingo/screens/common/image_banner_view.dart';
 import 'home_view.dart';
-import 'package:recyclebingo/util/trace_logger.dart';
+import 'dart:developer' as developer;
 
 class HomeViewState extends State<HomeView> {
 
@@ -10,8 +10,32 @@ class HomeViewState extends State<HomeView> {
   void _onItemTapped(int index) {
     setState(() {
       currentTabIndex = index;
-      Logger.Write("Current Index " + currentTabIndex.toString());
+      developer.log('log me', name: 'my.app.category');
     });
+  }
+
+  // user defined function
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert Dialog title"),
+          content: new Text("Alert Dialog body"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
