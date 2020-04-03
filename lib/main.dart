@@ -30,10 +30,10 @@ class MyApp extends StatelessWidget {
 
   Future<void> _requestPermission() async {
 
-    var status = await Permission.location.status;
-    Logger.write("Location " + status.toString());
+    var locationStatus = await Permission.location.status;
+    Logger.write("locationStatus " + locationStatus.toString());
 
-    if (status != PermissionStatus.granted) {
+    if (locationStatus != PermissionStatus.granted) {
       Logger.write("requesting location");
       Map<Permission, PermissionStatus> statuses = await [
         Permission.location,

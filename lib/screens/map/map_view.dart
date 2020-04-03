@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:recyclebingo/util/trace_logger.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 class MapView extends StatefulWidget {
 
@@ -11,35 +14,74 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
 
-  static const double _hPadding = 16.0;
   Completer<GoogleMapController> _controller = Completer();
-
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
-  final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  Location _locationTracker = Location();
+  StreamSubscription _locationSubscription;
+  Marker marker;
+  Circle circle;
 
   void _onMapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
     Logger.write('_onMapCreated');
+    _controller.complete(controller);
   }
 
-  Future<void> _goToTheLake() async {
-    Logger.write('_goToTheLake');
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  static final CameraPosition _initialCameraPosition = new CameraPosition(
+      target: LatLng(37.4128156834, -122.089978507),
+      zoom: 14);
+
+  Future<Uint8List> getMarker() async{
+    ByteData byteData = await DefaultAssetBundle.of(context).load("assets/images/garbage-truck.png");
+    return byteData.buffer.asUint8List();
+  }
+
+  void _getCurrentLocation() async {
+    Logger.write('_getCurrentLocation');
+
+    Uint8List imageData = await getMarker();
+    var location = await _locationTracker.getLocation();
+    updateMarkerAndCircle(location, imageData);
+
+    if (_locationSubscription != null) {
+      _locationSubscription.cancel();
+    }
+
+    _locationSubscription =
+        _locationTracker.onLocationChanged.listen((newLocationData) async {
+          final GoogleMapController controller = await _controller.future;
+          controller.animateCamera(CameraUpdate.newCameraPosition(
+              new CameraPosition(target: LatLng(
+                  newLocationData.latitude, newLocationData.longitude),
+                  zoom: 18)));
+          updateMarkerAndCircle(newLocationData, imageData);
+        });
+  }
+
+  void updateMarkerAndCircle(LocationData newLocationData, Uint8List imageData){
+    LatLng latLng = LatLng(newLocationData.latitude, newLocationData.longitude);
+    this.setState((){
+      marker = new Marker(
+        markerId: MarkerId("home"),
+        position: latLng,
+        rotation: newLocationData.heading,
+        draggable: false,
+        zIndex: 2,
+        flat:true,
+        anchor:Offset(0.5,0.5),
+        icon: BitmapDescriptor.fromBytes(imageData)
+      );
+      circle = Circle(
+        circleId: CircleId('Car'),
+        radius: newLocationData.accuracy,
+        zIndex: 1,
+        strokeColor: Colors.blue,
+        center: latLng,
+        fillColor: Colors.blue.withAlpha(70)
+      );
+    });
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -50,19 +92,18 @@ class _MapViewState extends State<MapView> {
           children: <Widget>[
             GoogleMap(
                 onMapCreated: _onMapCreated,
-                rotateGesturesEnabled: true,
-                compassEnabled: true,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
                 mapType: MapType.normal,
-                initialCameraPosition: _kGooglePlex
+                initialCameraPosition: _initialCameraPosition,
+                markers: Set.of((marker != null) ? [marker] : []),
+                circles: Set.of((circle != null) ? [circle] : []),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
             ),
           ]
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: Text('To the lake!'),
-        icon: Icon(Icons.directions_boat),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _getCurrentLocation,
+        child: Icon(Icons.location_searching),
       ),
     );
   }
