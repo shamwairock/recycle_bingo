@@ -18,8 +18,8 @@ class _MapViewState extends State<MapView> {
   Location _locationTracker = Location();
   LatLng currentLocationLatLng;
   BitmapDescriptor pinLocationIcon;
-  Set<Marker> _markers;
-  Set<Circle> _circles;
+  Set<Marker> _markers = new Set<Marker>();
+  Set<Circle> _circles =new Set<Circle>();
 
   static final CameraPosition _initialCameraPosition = new CameraPosition(
       target: LatLng(1.290270, 103.851959), zoom:10);
@@ -27,6 +27,7 @@ class _MapViewState extends State<MapView> {
   void _onMapCreated(GoogleMapController controller) {
     Logger.write('_onMapCreated');
     _controller.complete(controller);
+    onInit();
   }
 
   Future<LatLng> _getCurrentLocation() async{
@@ -44,31 +45,52 @@ class _MapViewState extends State<MapView> {
         new CameraPosition(target: LatLng(
             latLng.latitude, latLng.longitude),
             zoom: 18)));
+
+    Logger.write('_zoomLocation done');
   }
 
   Future<void> _zoomToCurrentLocation() async{
+    Logger.write('_zoomToCurrentLocation');
+
     _zoomLocation(currentLocationLatLng);
+
+    Logger.write('_zoomToCurrentLocation done');
   }
 
   Future<void> onInit() async{
+    Logger.write('onInit');
+
     currentLocationLatLng = await _getCurrentLocation();
     pinLocationIcon = await BitmapDescriptor.fromAssetImage(
         ImageConfiguration(devicePixelRatio: 2.5),
-        'assets/images/garbage-truck.png');
+        'assets/images/garbage-truck-small.png');
 
-    Marker marker = new Marker(markerId: MarkerId('Marker1'),
+    Logger.write('onInit 1');
+    final Marker marker = new Marker(markerId: MarkerId('Marker1'),
         position: currentLocationLatLng,
         icon: pinLocationIcon);
+    Logger.write('onInit 2');
 
-    ArgumentError.checkNotNull(pinLocationIcon);
-    _markers.add(marker);
+    final Circle circle = new Circle(
+        circleId: CircleId('Cirle1'),
+        center: LatLng(currentLocationLatLng.latitude,currentLocationLatLng.longitude),
+        radius: 20,
+        fillColor: Colors.lightGreenAccent.withOpacity(0.5),
+        strokeColor: Colors.transparent,
+        zIndex: 2
+
+    );
+    setState(() {
+      _markers.add(marker);
+      _circles.add(circle);
+    });
+    Logger.write('onInit 3');
+    Logger.write('onInit done');
   }
 
   @override
   Widget build(BuildContext context) {
 
-
-    onInit();
 
     return Scaffold(
       appBar: AppBar(
