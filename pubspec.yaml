@@ -25,6 +25,7 @@ dependencies:
   geolocator:
   location:
   permission_handler: ^5.0.0+hotfix.2
+  splashscreen: ^1.2.0
 
 dev_dependencies:
   flutter_test:
