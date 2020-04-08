@@ -33,17 +33,17 @@ class _MyAppState extends State<MyApp> {
     return new SplashScreen(
         seconds: 5,
         navigateAfterSeconds: new NavigationView(),
-        title: new Text('Welcome To Recycle Bingo',
+        title: new Text('Recycle Bingo',
           style: new TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
               color: Colors.white
             ),
         ),
-        //image: new Image.network('https://i.imgur.com/TyCSG9A.png'),
-        backgroundColor: Colors.orange,
+        image: new Image.asset('assets/images/splash-screen-icon.png', width: 300.0, height: 300.0,),
+        backgroundColor: Colors.orange[600],
         styleTextUnderTheLoader: SplashScreenTitleTextStyle,
-        loadingText: Text('Loading...',
+        loadingText: Text('by 4GM',
           style: SplashScreenLoaderTextStyle
         ),
         //photoSize: 100.0,
