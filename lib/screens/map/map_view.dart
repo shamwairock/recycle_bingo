@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:recyclebingo/screens/map/add_recycle_bin_view.dart';
 import 'package:recyclebingo/util/GoogleMapsServices.dart';
 import 'package:recyclebingo/util/number_util.dart';
 import 'package:recyclebingo/util/trace_logger.dart';
@@ -26,6 +27,7 @@ class _MapViewState extends State<MapView> {
   Set<Circle> _circles = new Set<Circle>();
   Set<Polyline> _polylines = new Set<Polyline>();
   Marker _selectedMarker;
+  AddRecycleBinView _addRecycleBinView = new AddRecycleBinView();
 
   static final CameraPosition _initialCameraPosition = new CameraPosition(
       target: LatLng(1.290270, 103.851959), zoom:10);
@@ -182,8 +184,51 @@ class _MapViewState extends State<MapView> {
     return polyline;
   }
 
-  void _onMapLongPressed(LatLng argument) {
+  Future<void> _onMapLongPressed(LatLng recycleBinLocation) async {
+
+   /* Navigator.push(context, new MaterialPageRoute(
+      builder: (BuildContext context) => _addRecycleBinView,
+      fullscreenDialog: false,
+    ));*/
+
+    var result = await showDialog(
+        context: context,
+        builder: (BuildContext context) => _addRecycleBinView
+    );
+
+    if(result == false){
+      return;
+    }
+
+    Logger.write(_addRecycleBinView.recycleBinName);
+
     // add marker
+    var icon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(),
+        'assets/images/current-purple.png');
+
+    var markerId = MarkerId('${_addRecycleBinView.recycleBinName}#${NumberUtil.createCryptoRandomString()}');
+    var marker = new Marker(markerId: markerId,
+        position: recycleBinLocation,
+        icon: icon,
+        onTap: (){_onMarkerTapped(markerId);},
+        infoWindow: InfoWindow(
+          title: markerId.value,
+        )
+    );
+
+    var circle = new Circle(
+        circleId: CircleId(NumberUtil.createCryptoRandomString().toString()),
+        center: recycleBinLocation,
+        radius: 80,
+        fillColor: Colors.purple.withOpacity(0.1),
+        strokeColor: Colors.transparent,
+        zIndex: 2);
+
+    setState(() {
+      _markers.add(marker);
+      _circles.add(circle);
+    });
   }
 
   Future<void> _onMapTapped(LatLng argument) async {
