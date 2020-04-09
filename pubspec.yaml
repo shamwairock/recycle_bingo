@@ -26,6 +26,7 @@ dependencies:
   location:
   permission_handler: ^5.0.0+hotfix.2
   splashscreen: ^1.2.0
+  http: ^0.12.0+4
 
 dev_dependencies:
   flutter_test:

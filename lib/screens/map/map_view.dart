@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:recyclebingo/util/GoogleMapsServices.dart';
 import 'package:recyclebingo/util/number_util.dart';
 import 'package:recyclebingo/util/trace_logger.dart';
 import 'package:geolocator/geolocator.dart';
@@ -22,7 +23,8 @@ class _MapViewState extends State<MapView> {
   LatLng _currentLocationLatLng;
   BitmapDescriptor _pinLocationIcon;
   Set<Marker> _markers = new Set<Marker>();
-  Set<Circle> _circles =new Set<Circle>();
+  Set<Circle> _circles = new Set<Circle>();
+  Set<Polyline> _polylines = new Set<Polyline>();
   Marker _selectedMarker;
 
   static final CameraPosition _initialCameraPosition = new CameraPosition(
@@ -135,19 +137,49 @@ class _MapViewState extends State<MapView> {
 
     final GoogleMapController controller = await _controller.future;
 
-    if(_selectedMarker != null){
-      if(_selectedMarker.markerId == markerId){
+    if (_selectedMarker != null) {
+      if (_selectedMarker.markerId == markerId) {
         controller.hideMarkerInfoWindow(markerId);
         return;
       }
     }
 
-    if(_selectedMarker != null){
+    if (_selectedMarker != null) {
       controller.hideMarkerInfoWindow(_selectedMarker.markerId);
     }
 
-    _selectedMarker = _markers.firstWhere((marker)=>marker.markerId == markerId);
+    _selectedMarker =
+        _markers.firstWhere((marker) => marker.markerId == markerId);
     controller.showMarkerInfoWindow(markerId);
+
+    var polyline = await _getRoute();
+
+    //try add line here
+    setState(() {
+      _polylines = new Set();
+      _polylines.add(polyline);
+    });
+
+  }
+
+  Future<Polyline> _getRoute() async{
+    var pointSource = _currentLocationLatLng;
+    var pointDestination = _selectedMarker.position;
+
+    var points = await GoogleMapsServices().getRouteCoordinates(pointSource, pointDestination);
+
+    var polyline = new Polyline(
+        polylineId: PolylineId(NumberUtil.createCryptoRandomString().toString()),
+        consumeTapEvents: true,
+        color: Colors.orange,
+        width: 5,
+        geodesic: true,
+        points: points,
+        visible: true,
+        jointType: JointType.round
+    );
+
+    return polyline;
   }
 
   void _onMapLongPressed(LatLng argument) {
@@ -172,6 +204,7 @@ class _MapViewState extends State<MapView> {
     LatLng recycleBinPosition4 = LatLng(1.3628,103.8948);
     LatLng recycleBinPosition5 = LatLng(1.3646,103.8947);
     LatLng recycleBinPosition6 = LatLng(1.3648,103.8958);
+    LatLng recycleBinPosition7 = LatLng(1.3696,103.8871);
 
     var locations = new Set<LatLng>();
     locations.add(recycleBinPosition1);
@@ -180,6 +213,7 @@ class _MapViewState extends State<MapView> {
     locations.add(recycleBinPosition4);
     locations.add(recycleBinPosition5);
     locations.add(recycleBinPosition6);
+    locations.add(recycleBinPosition7);
 
     // simulate slow down
     await Future.delayed(const Duration(milliseconds: 3000), () {
@@ -222,6 +256,7 @@ class _MapViewState extends State<MapView> {
                 initialCameraPosition: _initialCameraPosition,
                 markers: _markers,
                 circles: _circles,
+                polylines: _polylines,
                 zoomGesturesEnabled: true,
                 rotateGesturesEnabled: true,
                 tiltGesturesEnabled: true,
