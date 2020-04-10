@@ -8,11 +8,12 @@ class AboutView extends StatelessWidget{
         appBar: AppBar(
           title: Text('about'),
         ),
+        backgroundColor: const Color(0xffded3ad),
         body:Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            ImageBannerView("assets/images/boss.jpg"),
+//            ImageBannerView("assets/images/boss.jpg"),
           ],
         )
     );

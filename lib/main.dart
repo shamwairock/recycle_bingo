@@ -6,17 +6,21 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:splashscreen/splashscreen.dart';
 
-void main() => runApp(new MaterialApp(
-  home: new MyApp(),
-  theme: ThemeData(
+void main() =>
+    runApp(
+        new MaterialApp(
+          home: new MyApp(),
+          theme: ThemeData(
             brightness: Brightness.light,
             primaryColor: Colors.orange,
             accentColor: Colors.orange,
             appBarTheme: AppBarTheme(
-            textTheme: TextTheme(title:  AppBarTextStyle)
+              textTheme: TextTheme(
+                  title:  AppBarTextStyle
+              )
             )
+          )
         )
-      )
     );
 
 class MyApp extends StatefulWidget {

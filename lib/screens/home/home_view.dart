@@ -12,19 +12,23 @@ class HomeView extends StatelessWidget{
         appBar: AppBar(
           title: Text('recycle bingo'),
         ),
-        body:Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-                padding: const EdgeInsets.fromLTRB(_hPadding, 32.0, _hPadding, 0),
-                child:Text('Hello recycle rangers', style: Theme.of(context).textTheme.title)
-            ),
-            Container(
-                padding: const EdgeInsets.fromLTRB(_hPadding, 0, _hPadding, 0),
-                child:Text('One man\'s Trash is another man\'s Treasure', style: Theme.of(context).textTheme.body1)
-            ),
-          ],
+        backgroundColor: const Color(0xffded3ad),
+        body:Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+//              Container(
+//                  padding: const EdgeInsets.fromLTRB(_hPadding, 32.0, _hPadding, 0),
+//                  child:Text('Hello recycle rangers', style: Theme.of(context).textTheme.title)
+//              ),
+//              Container(
+//                  padding: const EdgeInsets.fromLTRB(_hPadding, 0, _hPadding, 0),
+//                  child:Text('One man\'s Trash is another man\'s Treasure', style: Theme.of(context).textTheme.body1)
+//              ),
+            ],
+          ),
+
         ),
     );
   }
